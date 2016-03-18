@@ -8,29 +8,10 @@ var gulp = require('gulp');
  	jshint = require('gulp-jshint'),
  	lib = require('bower-files')(),
  	browserSync = require('browser-sync').create(),
- 	sass = require('gulp-sass'),
+ 	mocha = require('gulp-mocha'),
  	sourcemaps = require('gulp-sourcemaps');
 var buildProduction = utilities.env.production;
 
-// build sass files into custom css file.
-gulp.task('cssBuild', function() {
-  return gulp.src('scss/*.scss')
-    .pipe(sourcemaps.init()) 
-    .pipe(sass())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./build/css'))
-    .pipe(browserSync.stream());
-});
-
-// load new css styles into browser on file change.
-gulp.watch('scss/*.scss', ['cssBuild']);
-
-// build vendor files for css/js
-gulp.task('bowerCSS', function () {
-  return gulp.src(lib.ext('css').files)
-    .pipe(concat('vendor.css'))
-    .pipe(gulp.dest('./build/css'));
-});
 
 gulp.task('bowerJS', function() {
 	return gulp.src(lib.ext('js').files)
@@ -39,8 +20,15 @@ gulp.task('bowerJS', function() {
 	.pipe(gulp.dest('./build/js'));
 });
 
+gulp.task('test', function() {
+	return gulp.src('./spec/specs.js', {read: false})
+	.pipe(mocha({reporter: 'nyan'}));
+});
+
+
+
 // run vendor builds in one task
-gulp.task('bower', ['bowerJS', 'bowerCSS']);
+gulp.task('bower', ['bowerJS']);
 
 
 // make files readable by browser, jin them into one file, minify them, and refresh the file each time.
@@ -64,7 +52,7 @@ gulp.task('minifyScripts', ['jsBrowserify'], function() {
 });
 
 gulp.task('clean', function() {
-	return del('build', 'tmp');
+	return del('build/js', 'tmp');
 });
 
 
@@ -76,7 +64,6 @@ gulp.task('build', ['clean'], function() {
 		gulp.start('jsBrowserify');
 	}
 	gulp.start('bower');
-	gulp.start('cssBuild');
 });
 
 // run a linter on all custom js files.
@@ -109,6 +96,7 @@ gulp.task('serve', function() {
 			index: 'index.html'
 		}
 	});
+	gulp.watch(['js/*.js'], ['test']);
 	gulp.watch(['js/*.js'], ['jsBuild']);
 	gulp.watch(['bower.json'], ['bowerBuild']);
 	gulp.watch(['*.html'], ['htmlBuild']);
