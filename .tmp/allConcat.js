@@ -1,9 +1,5 @@
-exports.testy = function() {
-	return "testy";
-};
+var testy = "also string";
+console.log(testy);
+var test = "string";
+console.log(test);
 
-var testy = require('./../js/scripts.js').testy;
-
-$(document).ready(function() {
-	$('body').append('<div></div>').text(testy()); 
-});

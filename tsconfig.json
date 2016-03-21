@@ -1,0 +1,11 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"rootDir": "app",
+		"out": "js/scripts.js"
+	}, 
+	"files": [
+		"app/this.ts", 
+		"app/that.ts"	
+	]
+}

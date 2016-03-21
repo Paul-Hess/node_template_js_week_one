@@ -9,9 +9,20 @@ var gulp = require('gulp');
  	lib = require('bower-files')(),
  	browserSync = require('browser-sync').create(),
  	mocha = require('gulp-mocha'),
+ 	sass = require('gulp-sass'),
  	sourcemaps = require('gulp-sourcemaps');
 var buildProduction = utilities.env.production;
 
+
+
+gulp.task('cssBuild', function() {
+  return gulp.src('scss/*.scss')
+    .pipe(sourcemaps.init()) 
+    .pipe(sass())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./build/stylesheets'))
+    .pipe(browserSync.stream());
+});
 
 gulp.task('bowerJS', function() {
 	return gulp.src(lib.ext('js').files)
@@ -64,6 +75,7 @@ gulp.task('build', ['clean'], function() {
 		gulp.start('jsBrowserify');
 	}
 	gulp.start('bower');
+	gulp.start('cssBuild');
 });
 
 // run a linter on all custom js files.
@@ -100,6 +112,6 @@ gulp.task('serve', function() {
 	gulp.watch(['js/*.js'], ['jsBuild']);
 	gulp.watch(['bower.json'], ['bowerBuild']);
 	gulp.watch(['*.html'], ['htmlBuild']);
+	gulp.watch(['app/*.ts'], ['test', 'jsBuild']);
+	gulp.watch(['scss/*.scss', 'scss/*/*.scss'], ['cssBuild']);
 });
-
-
